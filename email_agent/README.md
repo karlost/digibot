@@ -1,6 +1,6 @@
-# Email Agent
+# Digibot - Email Agent
 
-Email Agent je asistent založený na Google ADK (Agent Development Kit), který využívá MCP (Model Context Protocol) email server pro odesílání emailů a vyhledávání příloh.
+Digibot je emailový asistent založený na Google ADK (Agent Development Kit), který využívá MCP (Model Context Protocol) email server od ai-zerolab pro práci s emaily. Agent umožňuje odesílání emailů, čtení emailů a správu emailových účtů.
 
 ## Instalace
 
@@ -23,68 +23,38 @@ Email Agent je asistent založený na Google ADK (Agent Development Kit), který
 
 ## Konfigurace
 
-1. Upravte soubor `.env` a nastavte své API klíče a SMTP údaje:
-   ```
-   # Pro Google AI Studio API
-   GOOGLE_GENAI_USE_VERTEXAI=FALSE
-   GOOGLE_API_KEY=YOUR_API_KEY_HERE
+Pro konfiguraci emailového serveru použijte grafické rozhraní MCP email serveru:
 
-   # Pro emailový server
-   EMAIL_SENDER=your-email@example.com
-   EMAIL_PASSWORD=your-app-password
+```bash
+mcp-email-server ui
+```
 
-   # SMTP nastavení
-   SMTP_SERVER=smtp.gmail.com
-   SMTP_PORT=587
-   SMTP_USE_TLS=TRUE
-   # SMTP_USE_SSL=FALSE
-   ```
-
-   **Poznámka:** Pro Gmail a jiné služby budete pravděpodobně potřebovat heslo specifické pro aplikaci.
-
-2. Konfigurační soubor pro MCP email server je uložen v `~/.config/zerolib/mcp_email_server/config.toml`. Tento soubor je vytvořen při prvním spuštění příkazu `mcp-email-server ui`.
+Tento příkaz otevře uživatelské rozhraní, kde můžete nastavit svůj emailový účet. Konfigurační soubor je uložen v `~/.config/zerolib/mcp_email_server/config.toml`.
 
 ## Použití
 
-K dispozici jsou dva agenti:
+1. Nejprve nainstalujte MCP email server od ai-zerolab (pokud ještě není nainstalovaný):
 
-### Standardní agent (používá @modelcontextprotocol/server-email)
-
-1. Spusťte agenta:
-   ```bash
-   email-agent
-   ```
-
-### Agent pro ai-zerolab MCP email server
-
-1. Nejprve nainstalujte MCP email server od ai-zerolab:
    ```bash
    pip install mcp-email-server
    ```
 
-2. Nakonfigurujte server (povinné při prvním použití):
+2. Nakonfigurujte emailový server (pokud jste to ještě neudělali):
+
    ```bash
    mcp-email-server ui
    ```
 
-   Tento příkaz otevře uživatelské rozhraní pro konfiguraci emailového serveru. Zde je potřeba nastavit:
-   - Jméno účtu (např. "Gmail")
-   - Popis účtu
-   - Vaše jméno
-   - Vaši emailovou adresu
-   - SMTP server pro odchozí poštu (např. smtp.gmail.com)
-   - SMTP port (např. 587)
-   - Uživatelské jméno pro SMTP
-   - Heslo pro SMTP (pro Gmail použijte heslo pro aplikace)
-   - IMAP server pro příchozí poštu (např. imap.gmail.com)
-   - IMAP port (např. 993)
-   - Uživatelské jméno pro IMAP
-   - Heslo pro IMAP
-
-3. Spusťte agenta:
+3. Spusťte emailového agenta:
 
    ```bash
-   email-agent-zerolab
+   python email_agent/email_agent/agent_zerolab.py
+   ```
+
+   Nebo pokud jste nainstalovali balíček v režimu vývoje:
+
+   ```bash
+   python -m email_agent.agent_zerolab
    ```
 
 ### Komunikace s agentem
@@ -92,24 +62,30 @@ K dispozici jsou dva agenti:
 Komunikujte s agentem pomocí příkazů:
 
 - Pro odeslání emailu: "Pošli email na adresu 'uzivatel[at]example.com' s předmětem 'Test' a obsahem 'Toto je testovací email'."
-- Pro vyhledání příloh: "Najdi soubory obsahující 'report' v názvu."
+- Pro čtení emailů: "Zobraz poslední emaily" nebo "Najdi emaily s předmětem 'Důležité'."
+- Pro přeposlání emailu: "Přepošli email s předmětem 'Test' na adresu 'jiny[at]example.com'."
 - Pro ukončení: "konec", "exit" nebo "quit"
 
 ## Funkce
 
-- **Odesílání emailů**: Agent může odesílat emaily s předmětem, obsahem a volitelně s přílohami.
-- **Vyhledávání příloh**: Agent může vyhledávat soubory podle vzoru v názvu, které lze použít jako přílohy.
-- **Čtení emailů**: Agent může číst emaily z vaší schránky (pouze s ai-zerolab MCP email serverem).
-- **Stránkování emailů**: Agent může procházet emaily po stránkách (pouze s ai-zerolab MCP email serverem).
+- **Odesílání emailů**: Agent může odesílat emaily s předmětem a obsahem.
+- **Čtení emailů**: Agent může číst emaily z vaší schránky.
+- **Vyhledávání emailů**: Agent může vyhledávat emaily podle předmětu, obsahu nebo odesílatele.
+- **Přeposílání emailů**: Agent může přeposílat emaily na jiné adresy.
+- **Správa účtů**: Agent může zobrazit seznam dostupných emailových účtů.
 
 ## Požadavky
 
 - Python 3.9+
 - Google ADK
-- MCP Email Server (buď @modelcontextprotocol/server-email nebo mcp-email-server)
-- Pro Gmail: Heslo pro aplikace (viz [Vytvoření a použití hesel pro aplikace](https://support.google.com/accounts/answer/185833))
+- MCP Email Server od ai-zerolab
+- Přístup k emailovému serveru (IMAP a SMTP)
+
+## Model
+
+Agent používá model `gemini-2.5-pro-preview-03-25` od Google, který poskytuje lepší podporu pro práci s nástroji MCP email serveru.
 
 ## Poznámky k bezpečnosti
 
-- Hesla a citlivé údaje ukládejte pouze v souboru `.env`, který by neměl být sdílen nebo nahrán do verzovacího systému.
-- Pro Gmail a jiné služby používejte hesla specifická pro aplikaci místo vašeho hlavního hesla.
+- Hesla a citlivé údaje jsou uloženy v konfiguračním souboru MCP email serveru.
+- Pro veřejné emailové služby jako Gmail používejte hesla specifická pro aplikaci místo vašeho hlavního hesla.
